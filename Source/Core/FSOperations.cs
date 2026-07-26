@@ -17,6 +17,8 @@ namespace Gitbot2.Source.Core
 
         public string Token { get; set; }
         public string GeneralId { get; set; }
+
+        public string Prefix { get; set; }
         public string Current { get; set; }
 
     }

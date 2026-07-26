@@ -21,13 +21,7 @@ namespace Gitbot2.Source.Core
         private IConfiguration config;
         private ILogger logger;
         private RestClient Rclient;
-        
-        private bool isRunning = true;
-        public static string CurrentRepo { get; set; }
-        public static List<User> users;
-
-        private bool reconnect = false;
-        
+            
 
         private int InitializeMembers(bool reconnect)
         {
@@ -118,12 +112,14 @@ namespace Gitbot2.Source.Core
                             }
                             else
                             {
-                                msg.AppendLine($"Hello {s.Username}!");
+                               
+                               
+                                msg.AppendLine($"Hello <@{s.Id}>!");
                             }
                         
                         });
 
-                        await Rclient.SendMessageAsync(config.GetValue<ulong>("Discord:GeneralId"),msg.ToString());
+                        await Rclient.SendMessageAsync(config.GetValue<ulong>("Discord:GeneralId"), msg.ToString());
                         
                       //  return ValueTask.CompletedTask;
                     }catch(Exception ex)
