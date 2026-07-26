@@ -2,6 +2,7 @@
 using LibGit2Sharp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -140,6 +141,29 @@ namespace Gitbot2.Source.Core
             var branches = repo.Branches;
 
             return  $" List of branches: {string.Join('\n',branches.Select(c => (repo.Head.FriendlyName == c.FriendlyName)? "*"+c.FriendlyName : c.FriendlyName ))}";
+
+        }
+
+        public static async Task<string> PopRepo(string target)
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, "repos.json");
+
+            Repositories repos = JsonSerializer.Deserialize<Repositories>(path);
+
+            List<string> _repos = new(repos.Repos);
+
+            if (!_repos.Remove(target))
+            {
+                return $"failed to remove {target}";
+            }
+
+            repos.Repos = _repos;
+
+            FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Write);
+
+            await JsonSerializer.SerializeAsync<Repositories>(fs,repos);
+
+            return $"Repository {target} has been popped";
 
         }
 

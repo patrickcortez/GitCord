@@ -10,10 +10,13 @@ namespace Gitbot2.Source
     {
         public string[] Roles { get; set; }
 
+        public string[] IllegalWords { get; set; }
+
         public string GenId { get; set; }
+
     }
 
-    internal static class MessageToggle
+    internal static class MessageToggle 
     {
         public static bool Ignore { get; set; } = false;
     }

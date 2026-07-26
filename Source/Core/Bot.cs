@@ -10,6 +10,7 @@ using NetCord.Gateway;
 using NetCord.Hosting.Services;
 using NetCord.Rest;
 using System.Text;
+using System.Text.Json;
 
 namespace Gitbot2.Source.Core
 {
@@ -120,6 +121,7 @@ namespace Gitbot2.Source.Core
                         });
 
                         await Rclient.SendMessageAsync(config.GetValue<ulong>("Discord:GeneralId"), msg.ToString());
+                        await Rclient.SendMessageAsync(config.GetValue<ulong>("Discord:GeneralId"), "Type `/help` for all the available commands");
                         
                       //  return ValueTask.CompletedTask;
                     }catch(Exception ex)
@@ -128,6 +130,8 @@ namespace Gitbot2.Source.Core
                         //return ValueTask.CompletedTask;
                     }
                 };
+
+                
                
                 
 
@@ -153,6 +157,8 @@ namespace Gitbot2.Source.Core
             {
 
                 _host.AddModules(typeof(Program).Assembly);
+                Repositories repo = JsonSerializer.Deserialize<Repositories>(Path.Combine(Environment.CurrentDirectory, "repos.json"));
+                RepoCache.SetCache(repo.Repos); // set our repo cache
 
                 await _host.StartAsync();
 

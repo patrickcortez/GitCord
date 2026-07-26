@@ -3,6 +3,7 @@ using Gitbot2.Source.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using NetCord;
 using NetCord.Gateway;
 using NetCord.Rest;
@@ -11,7 +12,7 @@ using System.Text;
 
 namespace Gitbot2.Source.Commands
 {
-
+ 
     // Utilities
     public class CommandModules : ApplicationCommandModule<ApplicationCommandContext>
     {
@@ -31,6 +32,28 @@ namespace Gitbot2.Source.Commands
                     MessageToggle.Ignore = false;
                     return "Parsing Messages";
                 }
+        }
+
+        [SlashCommand("help","get acquianted with all the GitCord commands")]
+        public string Help()
+        {
+            string help = @"
+                    Commands:
+                        list                    - lists all repositories
+                        switch                  - switch to a repository
+                        current                 - shows current repository
+                        commit <message>        - commit changes with a message
+                        merge <b1>              - merge current branch with chosen branch
+                        del <repo>              - deletes a repo
+                        checkout <br>           - checksout branch
+                        branches                - list all the branches
+                        status                  - get the status of the repository
+
+                    Flags:
+                        /ignore                 - ignores chat,
+                ";
+
+            return help;
         }
 
     }
@@ -113,10 +136,37 @@ namespace Gitbot2.Source.Commands
 
             return msg;
         }
-        
 
+        [SubSlashCommand("merge","Merge a branch with current branch")]
+        public async Task<string> MergeBranch(string branch)
+        {
+            IOptions<_Roles> roles = Services.CreateProvider().Services.GetService<IOptions<_Roles>>();
+            CommandHandler coms = new("merge", Services.CreateProvider().Services.GetService<RestClient>(), ulong.Parse(roles.Value.GenId));
 
+            int exc = await coms.ExecuteCommand();
 
+            if(exc == 0)
+            {
+                return $"Branch {branch} merged";
+            }
+
+            return $"Failed to merge {branch}";
+        }
+
+    }
+
+    // Repository List Commands
+
+    [SlashCommand("repo","manage your repo-list")]
+    public class RepoModule : ApplicationCommandModule<ApplicationCommandContext>
+    {
+        [SubSlashCommand("pop","deletes a repository from list")]
+        public async Task<string> Pop([SlashCommandParameter(Name = "target",Description = "Name of repository you want to pop")] string target)
+        {
+            string msg = await FSOperations.PopRepo(target);
+
+            return msg;
+        }
     }
 
 

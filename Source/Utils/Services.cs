@@ -33,6 +33,7 @@ namespace Gitbot2.Source.Utils
                             option.Intents = GatewayIntents.GuildMessages
                             | GatewayIntents.DirectMessages
                             | GatewayIntents.MessageContent
+                            | GatewayIntents.GuildMessages
                             | GatewayIntents.DirectMessageReactions
                             | GatewayIntents.Guilds
                             | GatewayIntents.GuildUsers
