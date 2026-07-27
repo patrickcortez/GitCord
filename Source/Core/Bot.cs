@@ -155,10 +155,14 @@ namespace Gitbot2.Source.Core
         {
             try
             {
+                string path = Path.Combine(Environment.CurrentDirectory, "repos.json");
+                string content = await File.ReadAllTextAsync(path);
+
+                Repositories? repo = JsonSerializer.Deserialize<Repositories>(content);
+                RepoCache.SetCache(repo.Repos,path); // set our repo cache
+
 
                 _host.AddModules(typeof(Program).Assembly);
-                Repositories repo = JsonSerializer.Deserialize<Repositories>(Path.Combine(Environment.CurrentDirectory, "repos.json"));
-                RepoCache.SetCache(repo.Repos); // set our repo cache
 
                 await _host.StartAsync();
 

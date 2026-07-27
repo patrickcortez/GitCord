@@ -38,19 +38,23 @@ namespace Gitbot2.Source.Commands
         public string Help()
         {
             string help = @"
-                    Commands:
-                        list                    - lists all repositories
-                        switch                  - switch to a repository
-                        current                 - shows current repository
-                        commit <message>        - commit changes with a message
-                        merge <b1>              - merge current branch with chosen branch
-                        del <repo>              - deletes a repo
-                        checkout <br>           - checksout branch
-                        branches                - list all the branches
-                        status                  - get the status of the repository
+                  Git Commands:
+                        switch                  - switch to a repository.
+                        current                 - shows current repository.
+                        commit <message>        - commit changes with a message.
+                        merge <b1>              - merge current branch with chosen branch.
+                        checkout <br>           - checksout branch.
+                        branches                - list all the branches.
+                        status                  - get the status of the repository.
+                  
+                  Repo-List Commands:
+                        list                    - list all repos in the list.
+                        pop <repo>              - delete a repo from the list.
+                        add <repo>              - add a repo to the list.
 
-                    Flags:
-                        /ignore                 - ignores chat,
+                  Other Commands:
+                        ignore                 - Ignores swears and offensive terminologies.
+                        help                   - displays this message.
                 ";
 
             return help;
@@ -63,21 +67,7 @@ namespace Gitbot2.Source.Commands
     [SlashCommand("git","Perform git operations on the current repository")] // all git repository operations
     public class GitModule : ApplicationCommandModule<ApplicationCommandContext>
     {
-        [SubSlashCommand("list","Lists all listed repositories")]
-        public string ListRepos()
-        {
-            StringBuilder sb = new();
-            sb.AppendLine("List of Repositories:");
 
-            FileSystem.GetRepositories().ToList().ForEach((c) =>
-            {
-                sb.AppendLine($"- {c}");
-            });
-
-            sb.AppendLine("----------------------------");
-
-            return sb.ToString();
-        }
 
         [SubSlashCommand("switch","Switch current repository with one of the repos in the list")]
         public async Task<string> SwitchRepos(string target)
@@ -166,6 +156,28 @@ namespace Gitbot2.Source.Commands
             string msg = await FSOperations.PopRepo(target);
 
             return msg;
+        }
+
+        [SubSlashCommand("add","adds a new repository to the list")]
+        public async Task<string> Add([SlashCommandParameter(Name ="repo",Description = "A new repository to be added")] string Repo)
+        {
+            return await FSOperations.AddRepo(Repo);
+        }
+
+        [SubSlashCommand("list", "Lists all listed repositories")]
+        public string ListRepos()
+        {
+            StringBuilder sb = new();
+            sb.AppendLine("List of Repositories:");
+
+            RepoCache.GetCache().ForEach((c) =>
+            {
+                sb.AppendLine($"- {c}");
+            });
+
+            sb.AppendLine("----------------------------");
+
+            return sb.ToString();
         }
     }
 

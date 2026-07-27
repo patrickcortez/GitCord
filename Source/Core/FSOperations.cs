@@ -1,4 +1,5 @@
-﻿using Gitbot2.Source.Utils;
+﻿using Gitbot2.Source.Commands;
+using Gitbot2.Source.Utils;
 using LibGit2Sharp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -148,23 +149,26 @@ namespace Gitbot2.Source.Core
         {
             string path = Path.Combine(Environment.CurrentDirectory, "repos.json");
 
-            Repositories repos = JsonSerializer.Deserialize<Repositories>(path);
-
-            List<string> _repos = new(repos.Repos);
-
-            if (!_repos.Remove(target))
+            if (!RepoCache.PopElement(target))
             {
-                return $"failed to remove {target}";
+                return $"Failed to pop {target}";
             }
 
-            repos.Repos = _repos;
+            bool success = await RepoCache.SaveCacheToFile();
 
-            FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Write);
 
-            await JsonSerializer.SerializeAsync<Repositories>(fs,repos);
 
-            return $"Repository {target} has been popped";
+            return (success)? $"Repository {target} has been popped" : "Failed to save to file";
 
+        }
+
+        public static async Task<string> AddRepo(string path)
+        {
+            RepoCache.AddElement(path);
+
+            bool result = await RepoCache.SaveCacheToFile();
+
+            return (result) ? "Repo Added!" : "Repo Failed to Add";
         }
 
         public static string Checkout(IConfiguration config, string branch)
