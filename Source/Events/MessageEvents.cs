@@ -32,7 +32,7 @@ namespace Gitbot2.Source.Events
             try
             {
 
-                if (message.Author.IsBot)
+                if (message.Author.IsBot || MessageToggle.Ignore)
                 {
                     return;
                 }
@@ -290,6 +290,11 @@ namespace Gitbot2.Source.Events
     {
         public async ValueTask HandleAsync(MessageReactionAddEventArgs reaction)
         {
+            if (MessageToggle.Ignore)
+            {
+                return;
+            }
+
             User? user = reaction.User;
             IOptions<_Roles>? roles = Services.CreateProvider().Services.GetService<IOptions<_Roles>>();
 
