@@ -13,7 +13,7 @@ namespace Gitbot2.Source.Commands
     internal static class RepoCache
     {
         private static List<string> Cache;
-        private static List<Remote> remotes;
+        private static List<Remote> remotes; // Will implement Tomorrow =P
         private static string filepath;
         public static string taskpath { get;private set; }
         public static string workingdir { get; } = Path.Combine(Environment.CurrentDirectory, "Repos");
