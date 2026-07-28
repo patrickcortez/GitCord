@@ -62,6 +62,66 @@ namespace Gitbot2.Source.Utils
             
         }
 
+        public static string[] TokenizeLine(string line)
+        {
+            bool isinQoutes = false;
+            int Wdepth = 0;
+            StringBuilder token = new();
+            List<string> tmp = new();
+
+            foreach(char c in line)
+            {
+                if (char.IsWhiteSpace(c))
+                {
+                    
+                    if(token.Length > 0)
+                    {
+                        tmp.Add(token.ToString());
+                        token.Clear();
+                        continue;
+                    }
+
+                    continue;
+                }
+
+                if(c == '"')
+                {
+                    isinQoutes = !isinQoutes;
+                    continue;
+                }
+
+                token.Append(c);
+            }
+
+            // Last check
+            if(token.Length > 0)
+            {
+                tmp.Add(token.ToString());
+                token.Clear();
+            }
+
+            return tmp.ToArray();
+
+        }
+
+        public static string ReplaceAt(string line, int startingPos, int length) // Quick helper function
+        {
+            StringBuilder newWord = new(line);
+            newWord.Replace(' ', '*', startingPos, length);
+            return newWord.ToString();
+        }
+
+        public static async Task WritetoFile(string path, IEnumerable<string> lines)
+        {
+            try
+            {
+                await File.WriteAllLinesAsync(path, lines);
+            }catch(OperationCanceledException ex)
+            {
+                logger.LogError(ex, "An Error has occurred while Writting to file");
+            }
+        }
+
         public static async Task<object>? GetValueAsync(string key)
         {
             string path = Path.Combine(Environment.CurrentDirectory, "config.json");

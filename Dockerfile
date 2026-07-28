@@ -5,6 +5,7 @@ FROM mcr.microsoft.com/dotnet/runtime:10.0 AS base
 USER $APP_UID
 WORKDIR /app
 
+# ToFix: Make the whole container writable, permission exceptions are annoying -_-.
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
@@ -26,6 +27,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish ./
 
+# Copy all my configuration files =P
 COPY Configurations/. ./
 
 ENTRYPOINT ["dotnet", "Gitbot2.dll"]

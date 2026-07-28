@@ -6,6 +6,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -171,6 +175,29 @@ namespace Gitbot2.Source.Core
             return (result) ? "Repo Added!" : "Repo Failed to Add";
         }
 
+
+        public static async Task<string> GitClone(string url,bool flag)
+        {
+            try
+            {
+
+
+                string path = Repository.Clone(url, RepoCache.workingdir);
+
+                if (flag == true)
+                {
+                    RepoCache.AddElement(path);
+                    await RepoCache.SaveCacheToFile();
+                    return $"Clone successful at {path}, and added to list";
+                }
+
+                return $"Clone Successful at {path}";
+            }catch(Exception ex)
+            {
+                logger.LogError(ex, "Something Went wrong while cloning");
+                return "Clone failed";
+            }
+        }
         public static string Checkout(IConfiguration config, string branch)
         {
             try

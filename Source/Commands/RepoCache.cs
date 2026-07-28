@@ -14,6 +14,7 @@ namespace Gitbot2.Source.Commands
         private static List<string> Cache;
         private static string filepath;
         public static string taskpath { get;private set; }
+        public static string workingdir { get; } = Path.Combine(Environment.CurrentDirectory, "Repos");
         private static ILogger logger;
         
 
@@ -28,6 +29,12 @@ namespace Gitbot2.Source.Commands
             {
                 File.Create(taskpath);
                 logger.LogInformation("Created task list at {}", taskpath);
+            }
+
+            if (!Path.Exists(workingdir))
+            {
+                Directory.CreateDirectory(workingdir);
+                logger.LogInformation("Created working directory made at {}", taskpath);
             }
         }
 

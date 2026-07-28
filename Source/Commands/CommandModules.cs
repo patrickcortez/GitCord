@@ -3,6 +3,7 @@ using Gitbot2.Source.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NetCord;
 using NetCord.Gateway;
@@ -148,6 +149,14 @@ namespace Gitbot2.Source.Commands
             return $"Failed to merge {branch}";
         }
 
+        [SubSlashCommand("clone","Clones repository")]
+        public async Task<string> Clone(string url,bool flag)
+        {
+            return await FSOperations.GitClone(url,flag);
+        }
+
+       
+
     }
 
     // Repository List Commands
@@ -187,7 +196,7 @@ namespace Gitbot2.Source.Commands
     }
 
     [SlashCommand("task","A collection of tasks")]
-    public class GitTask
+    public class GitTask : ApplicationCommandModule<ApplicationCommandContext>
     {
         /*
          Syntax:
@@ -213,15 +222,57 @@ namespace Gitbot2.Source.Commands
         }
 
         [SubSlashCommand("pop", "crosses out a task")]
-        public string Pop(string _Task) // need to write a tokenizer -_-
+        public async Task<string> Pop(int index) // need to write a tokenizer -_-
         {
-            return "";
+            Tokenizer token = new(RepoCache.taskpath);
+
+            var tokens = await token.GetTokensAsync();
+
+            if(index < 0 || index > tokens.Count)
+            {
+                return "index cannot be higher/lower than total of tasks";
+            }
+
+            var item = tokens.ElementAt(index);
+            item.Item1 = true;
+            item.Item2 = Utility.ReplaceAt(item.Item2, 1, 1);
+
+            tokens[index] = item;
+
+
+
+
+            List<string> temp = new();
+
+            tokens.ForEach((item) =>
+            {
+                temp.Add(item.Item2);
+            });
+  
+            await Utility.WritetoFile(RepoCache.taskpath, temp);
+
+            return "Task Popped";
+
         }
 
         [SubSlashCommand("list", "lists all tasks")]
-        public string List(string _Task)  // Iterate through all lines, store in a list of strings then display using forloop
+        public async Task<string> List()  // Iterate through all lines, store in a list of strings then display using forloop
         {
-            return "";
+            StringBuilder list = new();
+
+            Tokenizer token = new(RepoCache.taskpath);
+
+            var tokens = await token.GetTokensAsync();
+
+            List<string> lines = tokens.Select(c => c.Item2).ToList();
+
+            lines.ForEach((item) =>
+            {
+                list.AppendLine(item.ToString());
+            });
+
+
+            return $"List of Tasks:\n {list.ToString()}";
         }
     }
 
