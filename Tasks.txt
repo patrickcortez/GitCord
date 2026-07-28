@@ -10,7 +10,7 @@ Tasks:
 
 [*] Move Message Commands to their own command modules
 [ ] Clean branches output, when running `branches`.
-[ ] Make Docker container for GitCord.
+[*] Make Docker container for GitCord.
 [*] Update the discord server
 [*] Update Bot banner and bot description
 [*] Add more flags
