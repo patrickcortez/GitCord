@@ -9,6 +9,7 @@ Tasks:
 [*] Implement Checkout
 
 [*] Implement clone
+[ ] Implement remotes
 [ ] Implement pull
 [ ] Implement push
 

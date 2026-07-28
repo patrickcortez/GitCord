@@ -172,6 +172,7 @@ namespace Gitbot2.Source.Commands
             return await FSOperations.GitClone(url,filename,flag);
         }
 
+        [SubSlashCommand("pull","Pulls changes from remote repository")]
        
 
     }

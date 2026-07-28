@@ -1,4 +1,5 @@
 ﻿using Gitbot2.Source.Utils;
+using LibGit2Sharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,6 +13,7 @@ namespace Gitbot2.Source.Commands
     internal static class RepoCache
     {
         private static List<string> Cache;
+        private static List<Remote> remotes;
         private static string filepath;
         public static string taskpath { get;private set; }
         public static string workingdir { get; } = Path.Combine(Environment.CurrentDirectory, "Repos");
@@ -25,6 +27,7 @@ namespace Gitbot2.Source.Commands
             filepath = FullPath;
             logger = Services.CreateProvider().Services.GetService<ILogger>();
             taskpath = Path.Combine(Environment.CurrentDirectory, "tasks.txt");
+            
 
             if (!Path.Exists(taskpath))
             {
