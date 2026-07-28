@@ -16,6 +16,7 @@ namespace Gitbot2.Source.Commands
         public static string taskpath { get;private set; }
         public static string workingdir { get; } = Path.Combine(Environment.CurrentDirectory, "Repos");
         private static ILogger logger;
+        private static Exception CurrentException;
         
 
         public static void SetCache(List<string> Primary,string FullPath = "") // Initializer Method
@@ -38,6 +39,16 @@ namespace Gitbot2.Source.Commands
             }
         }
 
+        public static void SetException(Exception exception)
+        {
+            CurrentException = exception;
+        }
+
+
+        public static Exception GetRecentException()
+        {
+            return CurrentException;
+        }
         
 
         public static string GetValue(int index) // Unused for now

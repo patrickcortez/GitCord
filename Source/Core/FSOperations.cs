@@ -73,6 +73,7 @@ namespace Gitbot2.Source.Core
 
             }catch(Exception ex)
             {
+                RepoCache.SetException(ex);
                 logger.LogError(ex, "Json Serializing/Deserializing Error");
                 return TaskStatus.Faulted;
             }
@@ -117,6 +118,7 @@ namespace Gitbot2.Source.Core
                 return "Nothing to commit";
             }catch(Exception ex)
             {
+                RepoCache.SetException(ex);
                 logger.LogError(ex, "Something Went wrong while committing");
                 return "Something Went wrong while committing";
             }
@@ -176,13 +178,13 @@ namespace Gitbot2.Source.Core
         }
 
 
-        public static async Task<string> GitClone(string url,bool flag)
+        public static async Task<string> GitClone(string url,string foldername,bool flag)
         {
             try
             {
 
 
-                string path = Repository.Clone(url, RepoCache.workingdir);
+                string path = Repository.Clone(url, Path.Combine(RepoCache.workingdir,foldername));
 
                 if (flag == true)
                 {
@@ -194,6 +196,7 @@ namespace Gitbot2.Source.Core
                 return $"Clone Successful at {path}";
             }catch(Exception ex)
             {
+                RepoCache.SetException(ex);
                 logger.LogError(ex, "Something Went wrong while cloning");
                 return "Clone failed";
             }
@@ -223,6 +226,7 @@ namespace Gitbot2.Source.Core
                 return $"Failed to checkout to {branch}";
             }catch(Exception ex)
             {
+                RepoCache.SetException(ex);
                 logger.LogError(ex, "Something went wrong while checking out");
                 return $"Failed to Checkout {branch}";
             }

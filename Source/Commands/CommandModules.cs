@@ -2,11 +2,7 @@
 using Gitbot2.Source.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NetCord;
-using NetCord.Gateway;
 using NetCord.Rest;
 using NetCord.Services.ApplicationCommands;
 using System.Text;
@@ -60,10 +56,31 @@ namespace Gitbot2.Source.Commands
 
                   Other Commands:
                         ignore                  - Ignores swears and offensive terminologies.
+                        current_exception       - Displays the most recent exception.
                         help                    - displays this message.
                 ";
 
             return help;
+        }
+
+        [SlashCommand("current_exception","Shows last known Exception")]
+        public string GetExc()
+        {
+            Exception ex = RepoCache.GetRecentException();
+            string message = $@"
+            [{DateTime.Now}]
+            
+            [Exception Message]
+            {ex.Message}
+            ------------
+            [Stack Trace]
+            {ex.StackTrace}
+            ------------
+            [Source]
+            {ex.Source}
+            ";
+
+            return message;
         }
 
     }
@@ -150,9 +167,9 @@ namespace Gitbot2.Source.Commands
         }
 
         [SubSlashCommand("clone","Clones repository")]
-        public async Task<string> Clone(string url,bool flag)
+        public async Task<string> Clone(string url,string filename,bool flag)
         {
-            return await FSOperations.GitClone(url,flag);
+            return await FSOperations.GitClone(url,filename,flag);
         }
 
        

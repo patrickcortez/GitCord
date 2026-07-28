@@ -1,4 +1,5 @@
-﻿using LibGit2Sharp;
+﻿using Gitbot2.Source.Commands;
+using LibGit2Sharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -56,6 +57,7 @@ namespace Gitbot2.Source.Utils
 
             }catch(Exception ex)
             {
+                RepoCache.SetException(ex);
                 logger.LogError(ex, "Failed to get users role");
                 return RoleStatus.Error;
             }
@@ -116,8 +118,9 @@ namespace Gitbot2.Source.Utils
             try
             {
                 await File.WriteAllLinesAsync(path, lines);
-            }catch(OperationCanceledException ex)
+            }catch(Exception ex)
             {
+                RepoCache.SetException(ex);
                 logger.LogError(ex, "An Error has occurred while Writting to file");
             }
         }

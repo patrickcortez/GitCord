@@ -163,6 +163,7 @@ namespace Gitbot2.Source.Core
 
 
                 _host.AddModules(typeof(Program).Assembly);
+                RepoCache.SetException(new("No Exceptions Yet"));
 
                 await _host.StartAsync();
 
