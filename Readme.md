@@ -1,7 +1,7 @@
 <div align="center">
 
 <h1> GitCord </h1>
-<img alt="GitCord-badge" src="https://img.shields.io/badge/GitBot-blue?logo=github"> 
+<img alt="GitCord-badge" src="https://img.shields.io/badge/GitCord-blue?logo=github"> 
 <img alt="version" src="https://img.shields.io/badge/version-1.0.0-red">
 <img alt="Discord-Bot" src="https://img.shields.io/badge/Discord%20Bot-violet?logo=discord">
 
