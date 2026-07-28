@@ -8,6 +8,15 @@ Tasks:
 [*] Implement Delete
 [*] Implement Checkout
 
+[ ] Implement clone
+[ ] Implement pull
+[ ] Implement push
+
+[ ] Implement Task:
+	[ ] Add
+	[ ] Pop
+	[ ] List
+
 [*] Move Message Commands to their own command modules
 [ ] Clean branches output, when running `branches`.
 [*] Make Docker container for GitCord.

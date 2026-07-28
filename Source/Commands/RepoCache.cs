@@ -13,15 +13,25 @@ namespace Gitbot2.Source.Commands
     {
         private static List<string> Cache;
         private static string filepath;
+        public static string taskpath { get;private set; }
         private static ILogger logger;
         
 
-        public static void SetCache(List<string> Primary,string FullPath = "")
+        public static void SetCache(List<string> Primary,string FullPath = "") // Initializer Method
         {
             Cache = new(Primary);
             filepath = FullPath;
             logger = Services.CreateProvider().Services.GetService<ILogger>();
+            taskpath = Path.Combine(Environment.CurrentDirectory, "tasks.txt");
+
+            if (!Path.Exists(taskpath))
+            {
+                File.Create(taskpath);
+                logger.LogInformation("Created task list at {}", taskpath);
+            }
         }
+
+        
 
         public static string GetValue(int index) // Unused for now
         {

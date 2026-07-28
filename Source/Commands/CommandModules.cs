@@ -51,10 +51,15 @@ namespace Gitbot2.Source.Commands
                         list                    - list all repos in the list.
                         pop <repo>              - delete a repo from the list.
                         add <repo>              - add a repo to the list.
+                    
+                  Task Commands:
+                        add                     - Adds a task
+                        pop                     - Crosses out a Task
+                        list                    - Lists all tasks
 
                   Other Commands:
-                        ignore                 - Ignores swears and offensive terminologies.
-                        help                   - displays this message.
+                        ignore                  - Ignores swears and offensive terminologies.
+                        help                    - displays this message.
                 ";
 
             return help;
@@ -178,6 +183,45 @@ namespace Gitbot2.Source.Commands
             sb.AppendLine("----------------------------");
 
             return sb.ToString();
+        }
+    }
+
+    [SlashCommand("task","A collection of tasks")]
+    public class GitTask
+    {
+        /*
+         Syntax:
+            [ ] Task1
+            [*] Task2
+         
+         */
+
+
+
+        [SubSlashCommand("add","Adds a task")]
+        public async Task<string> Add(string _Task)
+        {
+            char completion = ' '; // space for incomplete, '*' for complete
+            string fulltask = $"[{completion}]: {_Task}"; // [ ] <Task>
+
+            using (StreamWriter sw = new(RepoCache.taskpath, true))
+            {
+                 await sw.WriteLineAsync(fulltask);
+            }
+
+            return "Task Added";
+        }
+
+        [SubSlashCommand("pop", "crosses out a task")]
+        public string Pop(string _Task) // need to write a tokenizer -_-
+        {
+            return "";
+        }
+
+        [SubSlashCommand("list", "lists all tasks")]
+        public string List(string _Task)  // Iterate through all lines, store in a list of strings then display using forloop
+        {
+            return "";
         }
     }
 
