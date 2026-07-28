@@ -10,7 +10,7 @@ public static class Program{
 
     private static ILogger logger;
     private static bool log = false;
-    private static readonly string version = "0.0.1";
+    private static readonly string version = "1.0.0";
 
     static Program()
     {

@@ -2,7 +2,7 @@
 
 <h1> Gitbot </h1>
 <img alt="GitBot-badge" src="https://img.shields.io/badge/GitBot-blue?logo=github"> 
-<img alt="version" src="https://img.shields.io/badge/version-0.0.1-red">
+<img alt="version" src="https://img.shields.io/badge/version-1.0.0-red">
 <img alt="Discord-Bot" src="https://img.shields.io/badge/Discord%20Bot-violet?logo=discord">
 
 <p>
