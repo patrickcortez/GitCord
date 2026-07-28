@@ -40,8 +40,16 @@ users to manage their Git Repositories by talking to the bot.
 
 ## Installation
 
-> [!NOTE] 
-> To be continued...
+To install **GitCord**, you must have *Dot-net SDK 10.0* and *Docker*. With those two installed,
+Simply:
+1. Clone the repository `git clone https://github.com/patrickcortez/GitCord.git`.
+2. Run `docker build -t gitcord` to build gitcord.
+3. Then Run **GitCord** `docker run gitcord`
+
+>[!NOTE]
+> Make sure you have a folder named `Configurations`
+> in the same directory as the *dockerfile*. 
+> Which holds your gitcord configurations.
 
 ---
 

@@ -38,6 +38,12 @@ public static class Program{
 
             }
 
+            if (!Utility.isJsonAvailable())
+            {
+                logger.LogWarning("Configuration files not found");
+                return 1;
+            }
+
             // Instantiate Bot
             MessageToggle.Ignore = false;
             Bot bot = new(true);
@@ -60,7 +66,7 @@ public static class Program{
                    errP = Path.Combine(Environment.CurrentDirectory,"error.log")
                 ;
 
-            await File.AppendAllTextAsync(errP, $"[{DateTime.Now}]\n{fullex}\n{"-".PadRight(20)}\n");
+            await File.AppendAllTextAsync(errP, $"[{DateTime.Now}]\n{fullex}\n{"-".PadRight(20)}\n[pwd:{Environment.CurrentDirectory}]");
 
             logger.LogInformation("Details written to {}",errP);
 

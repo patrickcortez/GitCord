@@ -5,12 +5,12 @@ Tasks:
 [*] Implement Status
 [*] Implement Commit
 [*] Implement Merge
-[ ] Implement Delete (-Idk, its risky-)
+[*] Implement Delete
 [*] Implement Checkout
 
-[ ] Move Message Commands to their own command modules
-[ ] Clean branches output, when running `branches`
-[ ] Add / prefix to commands
-[ ] Update the discord server
-[ ] Update Bot banner and bot description
-[ ] Add more flags
+[*] Move Message Commands to their own command modules
+[ ] Clean branches output, when running `branches`.
+[ ] Make Docker container for GitCord.
+[*] Update the discord server
+[*] Update Bot banner and bot description
+[*] Add more flags

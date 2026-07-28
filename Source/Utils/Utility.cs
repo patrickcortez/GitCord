@@ -17,6 +17,12 @@ namespace Gitbot2.Source.Utils
         private static ILogger logger;
         private static IOptions<_Roles> config;
         static Utility(){
+
+            if (!isJsonAvailable())
+            {
+                return;
+            }
+
             logger = Services.CreateProvider("Utility").Services.GetRequiredService<ILogger>();
             config = Services.CreateProvider("Utility").Services.GetService<IOptions<_Roles>>();
         }
@@ -56,7 +62,7 @@ namespace Gitbot2.Source.Utils
             
         }
 
-        public static async Task<object> GetValueAsync(string key)
+        public static async Task<object>? GetValueAsync(string key)
         {
             string path = Path.Combine(Environment.CurrentDirectory, "config.json");
 
@@ -76,6 +82,15 @@ namespace Gitbot2.Source.Utils
             return null; // If key is not valid
             
         }
+
+
+        public static bool isJsonAvailable() // Will update this soon...
+        {
+            string path = Path.Combine(Environment.CurrentDirectory, "repos.json"); 
+
+            return Path.Exists(path);
+        }
+
 
         
     }
