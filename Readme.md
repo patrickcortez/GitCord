@@ -7,7 +7,7 @@
 
 <p>
 <b>GitCord</b> is a Discord Bot that manages repositories locally on the server side, and lets a server owner
-control their repositories remotely without having to <i>SSH</i> or remote to their machine. <b>GitBot</b> allows 
+control their repositories in their Discord server. <b>GitBot</b> allows 
 users to manage their Git Repositories by talking to the bot.
 <p>
 
@@ -34,7 +34,10 @@ users to manage their Git Repositories by talking to the bot.
  - Merge, create, switcg and delete branches.
  - Get the status of a repository.
  - Manage files and directories of a repository.
- - Pull and push to remote repository/ies.
+ - Pull and push [partially implemented] to remote repository/ies.
+ - List Remotes
+ - Add,Pop and list tasks
+ - Authenticate [not finished]
 	
 ---
 
