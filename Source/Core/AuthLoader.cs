@@ -11,14 +11,15 @@ namespace Gitbot2.Source.Core
 
             Auths? auths = await JsonSerializer.DeserializeAsync<Auths>(fs);
 
-            return auths;
+            return (auths is not null)? auths : null;
         }
 
         public async Task PushToDB(Auth auth)
         {
-            Auths auths = new();
+            
+            Auths auths = RepoCache.GetAuths();
             auths.auths.Add(auth);
-            await using FileStream fs = new FileStream(RepoCache.authdb, FileMode.Append, FileAccess.Write, FileShare.Write);
+            await using FileStream fs = new FileStream(RepoCache.authdb, FileMode.Create, FileAccess.Write, FileShare.Write);
 
             await JsonSerializer.SerializeAsync<Auths>(fs, auths);
         }

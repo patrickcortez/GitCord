@@ -263,5 +263,32 @@ namespace Gitbot2.Source.Core
             }
         }
 
+        public static string PushRepo(string branchName)
+        {
+            try
+            {
+                bool success = true;
+                Repository current = RepoCache.GetCurrentRepo();
+
+                Branch target = current.Branches[branchName];
+
+                PushOptions option = new() { OnPushStatusError=(s) => { logger.LogError("Failed to push: {}",s.Message); success = false; } };
+
+                current.Network.Push(target);
+
+                if(success == false)
+                {
+                    return "Failed to push";
+                }
+
+                return "Changes Pushed";
+            }catch(Exception ex)
+            {
+                RepoCache.SetException(ex);
+                logger.LogError(ex, "Something went wrong while pushing");
+                return "Failed to push";
+            }
+        }
+
     }
 }

@@ -232,8 +232,17 @@ namespace Gitbot2.Source.Core
                 RepoCache.SetCurrentRepo(config.GetValue<string>("Discord:Current"));
                 RepoCache.SetRequests();
                 RepoCache.SetContent(("None","None","None"));
-                RepoCache.SetAuths(await authloader.GetDB());
 
+                if(Utility.GetFileLines(RepoCache.authdb) > 0)
+                {
+                    RepoCache.SetAuths(await authloader.GetDB());
+                }
+                else
+                {
+                    Auths nauth = new Auths();
+                    nauth.auths.Add(new Auth() { GitName = "none", PAT = "none", Username = "none" });
+                    RepoCache.SetAuths(nauth);
+                }
 
                 await _host.StartAsync();
 

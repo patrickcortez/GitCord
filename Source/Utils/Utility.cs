@@ -64,6 +64,24 @@ namespace Gitbot2.Source.Utils
             
         }
 
+        // Make a for each auth checker, for each auth in auths. -_-.
+
+        public static int GetFileLines(string path) // file line checker =P
+        {
+            int lines = 0; // line counting
+            string line = ""; // line reading
+
+            using(StreamReader reader = new(path))
+            {
+                while((line = reader.ReadLine()) != null)
+                {
+                    lines++; // increment per line
+                }
+            }
+
+            return lines; // return line result
+        }
+
         public static string[] TokenizeLine(string line)
         {
             bool isinQoutes = false;

@@ -228,7 +228,12 @@ namespace Gitbot2.Source.Commands
         {
            return FSOperations.ListRemotes(RepoCache.GetCurrentRepo());
         }
-       
+
+        [SubSlashCommand("push","Push a commit to the repository")]
+
+        // Find a way to make GitCord useful before adding push and pull
+        // Add Import command to import files/folders to the local repository.
+
 
     }
 

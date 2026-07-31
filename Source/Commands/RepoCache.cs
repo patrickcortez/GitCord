@@ -67,6 +67,11 @@ namespace Gitbot2.Source.Commands
             userAuths = newAuths;
         }
 
+        public static Auths GetAuths()
+        {
+            return userAuths;
+        }
+
         public static Auth GetAuth(int index)
         {
             return userAuths.auths[index];
