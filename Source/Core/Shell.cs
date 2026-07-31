@@ -15,6 +15,7 @@ namespace Gitbot2.Source.Core
         public Shell(string Arguments, ILogger _logger)
         {
             logger = _logger;
+            error = new();
             string shellname = "",commandflag="";
             if (OperatingSystem.IsWindows())
             {
@@ -48,45 +49,55 @@ namespace Gitbot2.Source.Core
 
         public async Task<(int exc,string output)> ExecuteAsync()
         {
-            StringBuilder DataOutput = new();
-            shell.OutputDataReceived += (_,e) =>
+            try
             {
-                if(e.Data is not null)
+                StringBuilder DataOutput = new();
+                shell.OutputDataReceived += (_, e) =>
                 {
-                    DataOutput.Append(e.Data);
-                }
-            };
+                    if (e.Data is not null)
+                    {
+                        DataOutput.AppendLine(e.Data);
+                    }
+                };
 
-            shell.ErrorDataReceived += (_, e) =>
+                shell.ErrorDataReceived += (_, e) =>
+                {
+                    if (e.Data is not null)
+                    {
+                        error.Append(e.Data);
+                    }
+                };
+
+
+
+                if (shell.Start())
+                {
+                    shell.BeginErrorReadLine();
+                    shell.BeginOutputReadLine();
+
+                    await shell.WaitForExitAsync();
+
+                    int exc = shell.ExitCode;
+
+                    string output = DataOutput.ToString();
+
+                    if (error.Length > 0)
+                    {
+                        return (exc, error.ToString()); // grab exit-code and error message
+                    }
+
+                    return (exc, (!string.IsNullOrEmpty(output))? output : "Command Successfully ran");
+                }
+
+                logger.LogError("Process failed to start");
+
+                return (1, error.ToString());
+            }catch(Exception ex)
             {
-                if(e.Data is not null)
-                {
-                    error.Append(e.Data);
-                }
-            };
-
-
-
-            if (shell.Start())
-            {
-                shell.BeginErrorReadLine();
-                shell.BeginOutputReadLine();
-
-                await shell.WaitForExitAsync();
-
-                int exc = shell.ExitCode;
-
-                if(error.Length > 0)
-                {
-                    return (exc, error.ToString()); // grab exit-code and error message
-                }
-
-                return (exc,DataOutput.ToString());
+                RepoCache.SetException(ex);
+                logger.LogError(ex, "Something went wrong while sending command");
+                return (1,"Command failed to run");
             }
-
-            logger.LogError("Process failed to start");
-
-            return (1,error.ToString());
         }
     }
 }

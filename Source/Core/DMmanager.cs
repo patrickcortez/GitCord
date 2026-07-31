@@ -42,7 +42,8 @@ namespace Gitbot2.Source.Core
         {
            
 
-            var modal = new ModalProperties("auth", "Git User Information", [new LabelProperties("Enter Username",new TextInputProperties("txt_uname",TextInputStyle.Short)),
+            var modal = new ModalProperties("auth", "Git User Information", [new LabelProperties("Enter Username",new TextInputProperties("txt_uname",TextInputStyle.Short)),new LabelProperties("Enter Email",
+                new TextInputProperties("txt_email",TextInputStyle.Short)),
             new LabelProperties("Enter PAT",new TextInputProperties("txt_pat",TextInputStyle.Paragraph))]);
 
 

@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json;
 using NetCord;
 
-using DataEntry = (string uname,string pat,string username); // Declare our data alias
+using DataEntry = (string uname,string pat,string email,string username); // Declare our data alias
 
 namespace Gitbot2.Source.Commands
 {

@@ -2,10 +2,13 @@
 using Gitbot2.Source.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NetCord;
 using NetCord.Rest;
 using NetCord.Services;
 using NetCord.Services.ApplicationCommands;
+using NetCord.Services.Commands;
 using System.Text;
 
 namespace Gitbot2.Source.Commands
@@ -230,9 +233,20 @@ namespace Gitbot2.Source.Commands
         }
 
         [SubSlashCommand("push","Push a commit to the repository")]
+        public string PushChanges(string branch)
+        {
+            string response = FSOperations.PushRepo(branch,Context.User);
 
-        // Find a way to make GitCord useful before adding push and pull
-        // Add Import command to import files/folders to the local repository.
+            return response;
+        }
+
+        [SubSlashCommand("pull","pull changes from remote")]
+        public string PullChanges(string branch)
+        {
+            string response = FSOperations.PullRepo(branch, Context.User);
+
+            return response;
+        }
 
 
     }
@@ -270,6 +284,15 @@ namespace Gitbot2.Source.Commands
             sb.AppendLine("----------------------------");
 
             return sb.ToString();
+        }
+
+        [SubSlashCommand("ext","Executes a Shell command to the local repository")]
+        public async Task<string> ExternalCommand([SlashCommandParameter(Name ="command",Description ="A command to execute")]string command)
+        {
+            Shell instance = new(command, Services.CreateProvider().Services.GetService<ILogger>());
+            var result = await instance.ExecuteAsync();
+
+            return result.output;
         }
     }
 

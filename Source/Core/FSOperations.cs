@@ -4,6 +4,7 @@ using LibGit2Sharp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NetCord;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -220,18 +221,6 @@ namespace Gitbot2.Source.Core
 
         }
 
-        public static string GitPush(Repository main,string name,string branch,string username,string GITHUB_PAT)
-        {
-            var remote = main.Network.Remotes[name];
-
-            PushOptions options = new();
-
-
-            main.Network.Push(remote, $"refs/heads/{branch}",options);
-
-            return "Git Pushed";
-        }
-
         public static string Checkout(IConfiguration config, string branch)
         {
             try
@@ -263,18 +252,26 @@ namespace Gitbot2.Source.Core
             }
         }
 
-        public static string PushRepo(string branchName)
+        public static string PushRepo(string branchName,User user)
         {
             try
             {
+                Auth currUser = Utility.isAuthenticated(user);
+
+                if(currUser is null)
+                {
+                    return "User is not authenticated";
+                }
+
                 bool success = true;
                 Repository current = RepoCache.GetCurrentRepo();
 
-                Branch target = current.Branches[branchName];
+                Remote target = current.Network.Remotes[branchName];
 
-                PushOptions option = new() { OnPushStatusError=(s) => { logger.LogError("Failed to push: {}",s.Message); success = false; } };
+                PushOptions option = new() { OnPushStatusError=(s) => { logger.LogError("Failed to push: {}",s.Message); success = false; },CredentialsProvider= (_url,_user,_types) 
+                    => new UsernamePasswordCredentials() { Username=currUser.Username,Password=currUser.PAT}};
 
-                current.Network.Push(target);
+                current.Network.Push(target,$"refs/heads/{current.Head.FriendlyName}",option);
 
                 if(success == false)
                 {
@@ -288,6 +285,34 @@ namespace Gitbot2.Source.Core
                 logger.LogError(ex, "Something went wrong while pushing");
                 return "Failed to push";
             }
+        }
+
+        public static string PullRepo(string target,User current)
+        {
+            try
+            {
+                Repository main = RepoCache.GetCurrentRepo();
+
+                Auth? currUser = Utility.isAuthenticated(current);
+
+                if (currUser is null)
+                {
+                    return "User is not Authenticated";
+                }
+
+                Signature sig = new(new Identity(currUser.Username, currUser.Email), DateTime.Now);
+
+                var result = LibGit2Sharp.Commands.Pull(main, sig, new PullOptions());
+
+                return "Successfully pulled changes";
+            }catch(Exception ex)
+            {
+                RepoCache.SetException(ex);
+                logger.LogError(ex, "Something went wrong while pulling");
+                return "Failed to pull";
+            }
+
+
         }
 
     }

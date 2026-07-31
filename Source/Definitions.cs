@@ -20,6 +20,7 @@ namespace Gitbot2.Source
     {
         public string GitName { get; set; }
         public string PAT { get; set; }
+        public string Email { get; set; }
         public string Username { get; set; }
     }
 

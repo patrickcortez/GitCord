@@ -27,6 +27,22 @@ namespace Gitbot2.Source.Utils
             logger = Services.CreateProvider("Utility").Services.GetRequiredService<ILogger>();
             config = Services.CreateProvider("Utility").Services.GetService<IOptions<_Roles>>();
         }
+
+        public static Auth? isAuthenticated(User current)
+        {
+            Auths collection = RepoCache.GetAuths();
+
+            foreach(Auth info in collection.auths)
+            {
+                if(info.Username == current.Username)
+                {
+                    return info;
+                }
+            }
+
+            return null;
+        }
+
         public static async Task<RoleStatus> isAllowed(RestClient client,Message message) // legacy code, not in use
         {
             try

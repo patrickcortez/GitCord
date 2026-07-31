@@ -164,16 +164,18 @@ namespace Gitbot2.Source.Core
                     logger.LogInformation("Modal interaction recieved at {}", DateTime.Now);
                     var comps = context.Components;
                     Label lun = (Label)comps[0];
-                    Label lap = (Label)comps[1];
+                    Label lin = (Label)comps[1];
+                    Label lap = (Label)comps[2];
 
-                    (TextInput uname, TextInput pat) Components = ((TextInput)lun.Component, (TextInput)lap.Component);
+                    (TextInput uname,TextInput email, TextInput pat) Components = ((TextInput)lun.Component,(TextInput)lin.Component, (TextInput)lap.Component);
 
-                    RepoCache.SetContent((Components.uname.Value, Components.pat.Value,context.User.Username));
+                    RepoCache.SetContent((Components.uname.Value, Components.pat.Value,Components.email.Value,context.User.Username));
 
                     Auth auth = new();
                     auth.PAT = RepoCache.GetRecentContent().pat;
                     auth.GitName = RepoCache.GetRecentContent().uname;
                     auth.Username = RepoCache.GetRecentContent().username;
+                    auth.Email = RepoCache.GetRecentContent().email;
 
                     await authloader.PushToDB(auth);
 
@@ -231,7 +233,7 @@ namespace Gitbot2.Source.Core
                 RepoCache.SetException(new("No Exceptions Yet"));
                 RepoCache.SetCurrentRepo(config.GetValue<string>("Discord:Current"));
                 RepoCache.SetRequests();
-                RepoCache.SetContent(("None","None","None"));
+                RepoCache.SetContent(("None","None","None@null.bit","None"));
 
                 if(Utility.GetFileLines(RepoCache.authdb) > 0)
                 {
