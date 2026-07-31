@@ -201,6 +201,37 @@ namespace Gitbot2.Source.Core
                 return "Clone failed";
             }
         }
+
+        public static string ListRemotes(Repository main)
+        {
+            RemoteCollection remotes = main.Network.Remotes;
+            StringBuilder message = new();
+
+            message.AppendLine("List of Remotes:\n");
+
+            foreach (var item in remotes)
+            {
+                message.AppendLine($"- {item.Name} {item.Url}");
+            }
+
+            message.AppendLine("-------------");
+
+            return message.ToString();
+
+        }
+
+        public static string GitPush(Repository main,string name,string branch,string username,string GITHUB_PAT)
+        {
+            var remote = main.Network.Remotes[name];
+
+            PushOptions options = new();
+
+
+            main.Network.Push(remote, $"refs/heads/{branch}",options);
+
+            return "Git Pushed";
+        }
+
         public static string Checkout(IConfiguration config, string branch)
         {
             try

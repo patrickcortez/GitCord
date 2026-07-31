@@ -1,4 +1,5 @@
-﻿using GitBot2.Source;
+﻿using Gitbot2.Source.Core;
+using GitBot2.Source;
 using LibGit2Sharp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,10 @@ using NetCord.Gateway.JsonModels;
 using NetCord.Hosting.Gateway;
 using NetCord.Hosting.Services.ApplicationCommands;
 using NetCord.Hosting.Services.Commands;
+using NetCord.Hosting.Services.ComponentInteractions;
 using NetCord.Rest;
+using NetCord.Services.ApplicationCommands;
+using NetCord.Services.ComponentInteractions;
 
 namespace Gitbot2.Source.Utils
 {
@@ -45,8 +49,11 @@ namespace Gitbot2.Source.Utils
                         }
                     ).AddCommands()
                     .AddApplicationCommands()
+                    .AddComponentInteractions<ModalInteraction, ModalInteractionContext>()
+                    .AddComponentInteractions<ButtonInteraction,ButtonInteractionContext>()
                     .AddGatewayHandlers(typeof(Program).Assembly)
                     .AddSingleton<ILogger>(LoggerFactory.Create(c => c.AddConsole()).CreateLogger(categoryname))
+                    .AddSingleton<AuthLoader>()
                     .AddLogging()
                     ;
 

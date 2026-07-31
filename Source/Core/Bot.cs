@@ -8,7 +8,9 @@ using Microsoft.Extensions.Logging;
 using NetCord;
 using NetCord.Gateway;
 using NetCord.Hosting.Services;
+using NetCord.Hosting.Services.ComponentInteractions;
 using NetCord.Rest;
+using NetCord.Services.ComponentInteractions;
 using System.Text;
 using System.Text.Json;
 
@@ -22,6 +24,7 @@ namespace Gitbot2.Source.Core
         private IConfiguration config;
         private ILogger logger;
         private RestClient Rclient;
+        private AuthLoader authloader;
             
 
         private int InitializeMembers(bool reconnect)
@@ -34,6 +37,7 @@ namespace Gitbot2.Source.Core
                 client = _host.Services.GetService<GatewayClient>();
                 config = _host.Services.GetService<IConfiguration>();
                 Rclient = _host.Services.GetService<RestClient>();
+                authloader = _host.Services.GetService<AuthLoader>();
 
                 // Configure our events
                 client.Connect += async () => {
@@ -151,6 +155,66 @@ namespace Gitbot2.Source.Core
             
         }
 
+        private async Task SetHost(IHost _host)
+        {
+            _host.AddComponentInteraction<ModalInteractionContext>("auth", async (ModalInteractionContext context) => {
+
+                try
+                {
+                    logger.LogInformation("Modal interaction recieved at {}", DateTime.Now);
+                    var comps = context.Components;
+                    Label lun = (Label)comps[0];
+                    Label lap = (Label)comps[1];
+
+                    (TextInput uname, TextInput pat) Components = ((TextInput)lun.Component, (TextInput)lap.Component);
+
+                    RepoCache.SetContent((Components.uname.Value, Components.pat.Value,context.User.Username));
+
+                    Auth auth = new();
+                    auth.PAT = RepoCache.GetRecentContent().pat;
+                    auth.GitName = RepoCache.GetRecentContent().uname;
+                    auth.Username = RepoCache.GetRecentContent().username;
+
+                    await authloader.PushToDB(auth);
+
+                    await context.Interaction.SendResponseAsync(InteractionCallback.Message("Information saved! Thank you for trusting GitCord"));
+                }
+                catch (Exception ex)
+                {
+                    RepoCache.SetException(ex);
+                    logger.LogError(ex, "Something went wrong while interacting");
+                }
+
+            });
+
+            _host.AddComponentInteraction<ButtonInteractionContext>("btn_yes", async (ButtonInteractionContext interact) => {
+                try
+                {
+                    User current = interact.User;
+                    DMmanager dm = new(current, interact.Client.Rest);
+                    await dm.SendModal(interact.Interaction);
+                }catch(Exception ex)
+                {
+                    RepoCache.SetException(ex);
+                    logger.LogError(ex, "Something went wrong while interacting");
+                }
+                
+            });
+
+            _host.AddComponentInteraction<ButtonInteractionContext>("btn_no", async (ButtonInteractionContext interact) => {
+                try
+                {
+                    await interact.Interaction.SendResponseAsync(InteractionCallback.Message("Cancelling Operation"));
+                    return;
+                }catch(Exception ex)
+                {
+                    RepoCache.SetException(ex);
+                    logger.LogError(ex, "Something went wrong while interacting");
+                }
+            });
+
+        }
+
         public async Task<int> RunAsync(bool isLog = false) // Start Bot
         {
             try
@@ -161,9 +225,15 @@ namespace Gitbot2.Source.Core
                 Repositories? repo = JsonSerializer.Deserialize<Repositories>(content);
                 RepoCache.SetCache(repo.Repos,path); // set our repo cache
 
+                await SetHost(_host);
 
                 _host.AddModules(typeof(Program).Assembly);
                 RepoCache.SetException(new("No Exceptions Yet"));
+                RepoCache.SetCurrentRepo(config.GetValue<string>("Discord:Current"));
+                RepoCache.SetRequests();
+                RepoCache.SetContent(("None","None","None"));
+                RepoCache.SetAuths(await authloader.GetDB());
+
 
                 await _host.StartAsync();
 

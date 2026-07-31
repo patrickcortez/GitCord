@@ -28,6 +28,6 @@ WORKDIR /app
 COPY --from=publish /app/publish ./
 
 # Copy all my configuration files =P
-COPY Configurations/. ./
+COPY --chown=app:app Configurations/. ./
 
 ENTRYPOINT ["dotnet", "Gitbot2.dll"]

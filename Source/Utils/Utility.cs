@@ -27,7 +27,7 @@ namespace Gitbot2.Source.Utils
             logger = Services.CreateProvider("Utility").Services.GetRequiredService<ILogger>();
             config = Services.CreateProvider("Utility").Services.GetService<IOptions<_Roles>>();
         }
-        public static async Task<RoleStatus> isAllowed(RestClient client,Message message)
+        public static async Task<RoleStatus> isAllowed(RestClient client,Message message) // legacy code, not in use
         {
             try
             {

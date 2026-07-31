@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NetCord.Rest;
+using NetCord.Services;
 using NetCord.Services.ApplicationCommands;
 using System.Text;
 
@@ -34,6 +35,7 @@ namespace Gitbot2.Source.Commands
         [SlashCommand("help","get acquianted with all the GitCord commands")]
         public string Help()
         {
+           
             string help = @"
                   Git Commands:
                         switch                  - switch to a repository.
@@ -83,6 +85,54 @@ namespace Gitbot2.Source.Commands
             return message;
         }
 
+        [SlashCommand("auth", "Sets Git username and pat")]
+        public async Task<string> Authenticate()
+        {
+            DMmanager dm = new(Context.User, Context.Client.Rest);
+            await dm.SendDM();
+
+            return "DM sent!";
+        }
+
+        [SlashCommand("recent_auth","For debugging only, dislays recent auth")] // Will be deleted soon
+        public string rec_auth(bool ShowJson)
+        {
+            try
+            {
+                if (ShowJson)
+                {
+                    StringBuilder json = new();
+                    using (StreamReader reader = new(RepoCache.authdb))
+                    {
+                        string? line = "";
+
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            json.AppendLine(line);
+                        }
+
+
+                    }
+
+                    if(json.Length < 1)
+                    {
+                        return "Database is empty";
+                    }
+
+                    return json.ToString();
+                }
+
+
+                return $"Recent auth: {RepoCache.GetRecentContent()}";
+            }catch(Exception ex)
+            {
+                RepoCache.SetException(ex);
+                return "Failed to show recent auth";
+            }
+        }
+
+        
+
     }
 
     // Git Command Module
@@ -96,6 +146,7 @@ namespace Gitbot2.Source.Commands
         public async Task<string> SwitchRepos(string target)
         {
             TaskStatus status = await FSOperations.SwitchRepo(target);
+            RepoCache.SetCurrentRepo(target);
 
             if(status == TaskStatus.RanToCompletion)
             {
@@ -172,7 +223,11 @@ namespace Gitbot2.Source.Commands
             return await FSOperations.GitClone(url,filename,flag);
         }
 
-        [SubSlashCommand("pull","Pulls changes from remote repository")]
+        [SubSlashCommand("remotes","Lists all remote urls and their names")]
+        public string GetRemotes()
+        {
+           return FSOperations.ListRemotes(RepoCache.GetCurrentRepo());
+        }
        
 
     }

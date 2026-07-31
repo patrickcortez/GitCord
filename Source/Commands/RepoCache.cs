@@ -7,18 +7,27 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using NetCord;
+
+using DataEntry = (string uname,string pat,string username); // Declare our data alias
 
 namespace Gitbot2.Source.Commands
 {
     internal static class RepoCache
     {
         private static List<string> Cache;
-        private static List<Remote> remotes; // Will implement Tomorrow =P
+        private static List<User> requests;
         private static string filepath;
+        private static string currentRepo;
+
+        private static DataEntry ResponseContent;
+
         public static string taskpath { get;private set; }
         public static string workingdir { get; } = Path.Combine(Environment.CurrentDirectory, "Repos");
+        public static string authdb { get; } = Path.Combine(Environment.CurrentDirectory, "authdb.json");
         private static ILogger logger;
         private static Exception CurrentException;
+        private static Auths userAuths;
         
 
         public static void SetCache(List<string> Primary,string FullPath = "") // Initializer Method
@@ -40,6 +49,56 @@ namespace Gitbot2.Source.Commands
                 Directory.CreateDirectory(workingdir);
                 logger.LogInformation("Created working directory made at {}", taskpath);
             }
+
+            if (!Path.Exists(authdb))
+            {
+                File.Create(authdb);
+                logger.LogInformation("Auth db made at {}", authdb);
+            }
+        }
+
+        public static void SetContent(DataEntry content)
+        {
+            ResponseContent = content;
+        }
+
+        public static void SetAuths(Auths newAuths)
+        {
+            userAuths = newAuths;
+        }
+
+        public static Auth GetAuth(int index)
+        {
+            return userAuths.auths[index];
+        }
+
+        public static DataEntry GetRecentContent()
+        {
+            return ResponseContent;
+        }
+        public static void SetRequests()
+        {
+            requests = new();
+        }
+
+        public static bool isInRequests(User user)
+        {
+            return requests.Contains(user);
+        }
+
+        public static void AddRequest(User user)
+        {
+            requests.Add(user);
+        }
+
+        public static void PopRequest(User user)
+        {
+            requests.Remove(user);
+        }
+
+        public static void ClearRequests()
+        {
+            requests.Clear();
         }
 
         public static void SetException(Exception exception)
@@ -47,10 +106,22 @@ namespace Gitbot2.Source.Commands
             CurrentException = exception;
         }
 
+        public static void SetCurrentRepo(string path)
+        {
+            currentRepo = path;
+        }
+
+       
+
 
         public static Exception GetRecentException()
         {
             return CurrentException;
+        }
+
+        public static Repository GetCurrentRepo()
+        {
+            return new(currentRepo);
         }
         
 
