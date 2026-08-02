@@ -3,17 +3,9 @@ using Gitbot2.Source.Utils;
 using LibGit2Sharp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NetCord;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
-using System.Net.Sockets;
-using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Gitbot2.Source.Core
 {
@@ -90,11 +82,16 @@ namespace Gitbot2.Source.Core
             return (!string.IsNullOrEmpty(repo)) ? repo : string.Empty ;
         }
 
-        public static string CommitRepo(IConfiguration config,string msg)
+        public static string CommitRepo(IConfiguration config,string msg,User user)
         {
             try
             {
                 string? current = config.GetValue<string>("Discord:Current");
+
+                if(current is null || current == string.Empty)
+                {
+                    return "Current repo failed to fetch";
+                }
 
                 Repository repo = new(current);
                 var repostat = repo.RetrieveStatus();
@@ -106,12 +103,16 @@ namespace Gitbot2.Source.Core
                         LibGit2Sharp.Commands.Stage(repo, "*");
                     }
 
-                    var name = repo.Config.Get<string>("user.name");
-                    var email = repo.Config.Get<string>("user.email");
+                     Auth? target = RepoCache.GetAuthByUser(user.Username);
 
-                    repo.Commit(msg, new(name.Value, email.Value, DateTime.Now), new(name.Value, email.Value, DateTime.Now));
+                    if(target is null)
+                    {
+                        return "User is not authenticated";
+                    }
 
-                    logger.LogInformation("Commited: {} , {} , {}", msg, name.Value, email.Value);
+                    repo.Commit(msg, new Signature(target.Username, target.Email, DateTime.Now), new Signature(target.Username, target.Email, DateTime.Now)); // Object not set to an instance?
+
+                    logger.LogInformation("Commited: {} , {} , {}", msg, target.GitName, target.Email);
 
                     return "Repo Committed!";
                 }

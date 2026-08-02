@@ -67,6 +67,19 @@ namespace Gitbot2.Source.Commands
             userAuths = newAuths;
         }
 
+        public static Auth? GetAuthByUser(string key)
+        {
+            Auth target = new();
+            userAuths.auths.ForEach((item) => { if (item.Username == key) { target = item; } });
+
+            if (target.PAT is null || target.PAT == string.Empty)
+            {
+                return null;
+            }
+
+            return target;
+        }
+
         public static Auths GetAuths()
         {
             return userAuths;

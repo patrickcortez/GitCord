@@ -15,6 +15,9 @@ namespace Gitbot2.Source.Commands
 {
  
     // Utilities
+
+    // Add a user flag in push and pull.
+
     public class CommandModules : ApplicationCommandModule<ApplicationCommandContext>
     {
         [SlashCommand("ping","Get a message of pong!")] // for fun, and first slash command I've ever added
@@ -181,7 +184,7 @@ namespace Gitbot2.Source.Commands
         [SubSlashCommand("commit","Commit changes of the current repository")]
         public string CommitRepo(string msg)
         {
-            string commit = FSOperations.CommitRepo(Services.CreateProvider().Services.GetService<IConfiguration>(), msg);
+            string commit = FSOperations.CommitRepo(Services.CreateProvider().Services.GetService<IConfiguration>(), msg,Context.User);
 
             return commit;
         }
