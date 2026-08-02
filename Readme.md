@@ -30,14 +30,15 @@ users to manage their Git Repositories by talking to the bot.
 
  - List all repositories in the server.
  - Switch between repositories.
+ - Switch between branches.
  - Commit all changes to a repository.
  - Merge, create, switcg and delete branches.
  - Get the status of a repository.
  - Manage files and directories of a repository.
- - Pull and push [partially implemented] to remote repository/ies.
+ - Pull and push to remote repository/ies.
  - List Remotes
- - Add,Pop and list tasks
- - Authenticate [not finished]
+ - Contains a Task System: Add,Pop and list tasks.
+ - Authenticate
 	
 ---
 
@@ -92,6 +93,7 @@ Her is an example of config.json:
 
 > [!NOTE]
 > Make sure to place it at the same directory as your executable.
+> I might remove config.json and repos.json soon. Too lazy to do it ATM =P.
 
 ---
 

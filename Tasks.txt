@@ -10,8 +10,8 @@ Tasks:
 
 [*] Implement clone
 [*] Implement remotes
-[ ] Implement pull
-[ ] Implement push
+[*] Implement pull
+[*] Implement push
 
 [*] Implement Task:
 	[*] Add
